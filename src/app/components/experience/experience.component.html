@@ -1,0 +1,124 @@
+<section class="experience min-vh-100 d-flex justify-content-center align-items-center pt-5 pb-5" id="experience">
+    <div class="experience_container d-flex flex-column h-100 justify-content-center align-items-center mt-5 mb-5">
+        <div class="experience_header d-flex flex-row justify-content-center">
+            <h1 class="experience_title">Experience</h1>
+            <div class="ico_container">
+                <i class="fa-solid fa-plus add_button add_button_ico position-absolute mt-2 ms-3" data-bs-toggle="modal" data-bs-target="#addExperienceModal" *ngIf="isLogged"></i>
+            </div>
+            <div class="modal fade" id="addExperienceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="" #experienceForm="ngForm" (ngSubmit)="experienceForm.form.valid && addExperience(experienceForm)">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-dark" id="addExperienceModalLabel">Add new experience</h5>
+                                <button type="button" #clsExperience class="btn-close" data-bs-dismiss="modal" (click)="onClose(experienceForm)"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="text-dark mb-2">Job information</h5>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="inputCompany" placeholder="Company" name="company" 
+                                        [(ngModel)]="experienceToAdd.company"
+                                        #eCompany="ngModel"
+                                        [ngClass]="{ 'is-invalid': experienceForm.submitted && eCompany.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="experienceForm.submitted && eCompany.invalid">
+                                        <p *ngIf="eCompany.errors" class="text-danger">Company name is required</p>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="inputPosition" placeholder="Job" name="position" 
+                                        [(ngModel)]="experienceToAdd.job" #ePosition="ngModel"
+                                        [ngClass]="{ 'is-invalid': experienceForm.submitted && ePosition.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="experienceForm.submitted && ePosition.invalid">
+                                        <p *ngIf="ePosition.errors" class="text-danger">Job name is required</p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <select class="form-select text-dark" id="inputJobType" name="job_type" [(ngModel)]="experienceToAdd.job_type"
+                                        #eJobType="ngModel"
+                                        [ngClass]="{ 'is-invalid': experienceForm.submitted && experienceToAdd.job_type === 'Job Type' }"
+                                        required
+                                    >
+                                        <option selected value="Job type" class="text-dark" disabled>Job type</option>
+                                        <option *ngFor="let job of jobs" [value]="job.name" class="text-dark">{{job.name}}</option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="experienceForm.submitted && experienceToAdd.job_type === 'Job Type'">
+                                        <p *ngIf="experienceToAdd.job_type === 'Job Type'" class="text-danger">"Job type" is not an assignable job</p>
+                                    </div>
+                                </div>
+                                <h5 class="text-dark">
+                                    Time
+                                    <input type="checkbox" class="form-check-input ms-4 fs-6" id="checkActualExperience" name="is_actual" [(ngModel)]="experienceToAdd.is_actual">
+                                    <label class="form-check-label text-dark ms-1 fs-6" for="checkActual">
+                                        Is Actual
+                                    </label>
+                                </h5>
+                                <div class="row g-2 mb-4">
+                                    <div class="col-sm">
+                                        <label for="inputExperienceStartDate" class="form-label fs-6 text-dark mb-0">Start date</label>
+                                        <input type="date" class="form-control" id="inputExperienceStartDate" placeholder="Start Date" name="start_date" [(ngModel)]="start_date">
+                                    </div>
+                                    <div class="col-sm" *ngIf="!experienceToAdd.is_actual">
+                                        <label for="inputExperienceEndDate" class="form-label fs-6 text-dark mb-0">End date</label>
+                                        <input type="date" class="form-control" id="inputExperienceEndDate" placeholder="End date" name="end_date" [(ngModel)]="end_date">
+                                    </div>
+                                </div>
+                                <h5 class="text-dark mb-2">Links</h5>
+                                <div class="form-text">Image</div>
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" id="inputExperienceImgUrl" placeholder="Image url" accept="image/jpeg" 
+                                        (change)="captureFile($event)" #experienceInput
+                                        [ngClass]="{ 'is-invalid': experienceForm.submitted && !file }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="experienceForm.submitted && !file">
+                                        <p *ngIf="!file" class="text-danger">Image is required</p>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mb-1" id="inputExperienceLink" placeholder="Link" name="link" [(ngModel)]="experienceToAdd.link">
+                                <input type="checkbox" class="form-check-input" id="checkExperienceEnabledLink" name="enabled_link" [(ngModel)]="experienceToAdd.enabled_link">
+                                <label class="form-check-label text-dark ms-1 mb-1" for="checkExperienceEnabledLink">
+                                    Enable link
+                                </label>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onClose(experienceForm)">Close</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobTypeModal" (click)="onClose(experienceForm)">Job types</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="experience_hr opacity-100 mb-5">
+        <div class="experience_cards_container mt-2">
+            <ul class="experience_cards">
+                <li class="experience_card position-relative" *ngFor="let experience of data">
+                    <a class="experience_link d-flex flex-row" [href]="experience.link">
+                        <div class="experience_card_img" id="experience_header">
+                            <img [src]="experience.img_url" alt="Imagen del proyecto">
+                        </div>
+                        <div class="experience_card_content">
+                            <h3 class="experience_card_title fs-5" id="title">
+                                {{experience.job}}
+                            </h3>
+                            <p class="experience_card_text" id="text">
+                                {{experience.company}} | {{experience.start_date}} to {{experience.end_date}} | {{experience.job_type}}
+                            </p>
+                        </div>
+                    </a>
+                    <div class="experience_buttons position-absolute top-50 end-0 translate-middle-y me-4">
+                        <i class="fa-solid fa-pen-to-square edit_button edit_button_ico me-3" *ngIf="isLogged" (click)="openEditModal(experience)" data-bs-toggle="modal" data-bs-target="#editExperienceModal"></i>
+                        <i class="fa-solid fa-trash delete_button" (click)="onDelete(experience)" *ngIf="isLogged"></i>
+                    </div>
+                </li>
+            </ul>
+            <app-experience-modal [experience] = "experienceToEdit" (onUpdateExperience)="updateExperience($event)"></app-experience-modal>
+            <app-job-modal (submit)="addJobTypes($event)" (delete)="deleteJobType($event)"></app-job-modal>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,110 @@
+<section class="education min-vh-100 d-flex justify-content-center align-items-center pt-5 pb-5" id="education">
+    <div class="education_container d-flex flex-column h-100 justify-content-center align-items-center mt-5 mb-5">
+        <div class="education_header d-flex flex-row justify-content-center">
+            <h1 class="education_title">Education</h1>
+            <div class="ico_container">
+                <i class="fa-solid fa-plus add_button add_button_ico position-absolute mt-2 ms-3" data-bs-toggle="modal" data-bs-target="#addEducationModal" *ngIf="isLogged"></i>
+            </div>
+            <div class="modal fade" id="addEducationModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="" #educationForm="ngForm" (ngSubmit)="educationForm.form.valid && addEducation(educationForm)">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-dark" id="addEducationModalLabel">Add new education</h5>
+                                <button type="button" #clsEducation class="btn-close" data-bs-dismiss="modal" (click)="onClose(educationForm)"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="text-dark mb-2">Education</h5>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="inputEducationInstitute" placeholder="Institute Name" name="institute" 
+                                        [(ngModel)]="educationToAdd.where" #where="ngModel"
+                                        [ngClass]="{ 'is-invalid': educationForm.submitted && where.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="educationForm.submitted && where.invalid">
+                                        <p *ngIf="where.errors" class="text-danger">Institute name is required</p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <input type="text" class="form-control" id="inputEducationTitle" placeholder="Title" name="title" 
+                                        [(ngModel)]="educationToAdd.degree" #degree="ngModel"
+                                        [ngClass]="{ 'is-invalid': educationForm.submitted && degree.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="educationForm.submitted && degree.invalid">
+                                        <p *ngIf="degree.errors" class="text-danger">Degree is required</p>
+                                    </div>
+                                </div>
+                                <h5 class="text-dark">
+                                    Time
+                                    <input type="checkbox" class="form-check-input ms-4 fs-6" id="educationActual" name="actualEducation" [(ngModel)]="educationToAdd.is_actual">
+                                    <label class="form-check-label text-dark ms-1 fs-6" for="educationActual">
+                                        Is Actual
+                                    </label>
+                                </h5>
+                                <div class="row g-2 mb-4">
+                                    <div class="col-sm">
+                                        <label for="inputEducationStartDate" class="form-label fs-6 text-dark mb-0">Start date</label>
+                                        <input type="date" class="form-control" id="inputEducationStartDate" placeholder="Start Date" name="start_date" [(ngModel)]="start_date">
+                                    </div>
+                                    <div class="col-sm" *ngIf="!educationToAdd.is_actual">
+                                        <label for="inputEducationEndDate" class="form-label fs-6 text-dark mb-0">End date</label>
+                                        <input type="date" class="form-control" id="inputEducationEndDate" placeholder="End date" name="end_date" [(ngModel)]="end_date">
+                                    </div>
+                                </div>
+                                <h5 class="text-dark mb-2">Links</h5>
+                                <div class="form-text">Image</div>
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" id="inputEducationImgUrl" placeholder="Image url" accept="image/jpeg" 
+                                        (change)="captureFile($event)" #educationInput
+                                        [ngClass]="{ 'is-invalid': educationForm.submitted && !file }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="educationForm.submitted && !file">
+                                        <p *ngIf="!file" class="text-danger">Image is required</p>
+                                    </div>
+                                    >
+                                </div>
+                                <input type="text" class="form-control mb-1" id="inputEducationLink" placeholder="Link" name="link" [(ngModel)]="educationToAdd.link">
+                                <input type="checkbox" class="form-check-input" id="educationEnabledLink" name="enabledEducation" [(ngModel)]="educationToAdd.enabled_link">
+                                <label class="form-check-label text-dark ms-1 mb-1" for="educationEnabledLink">
+                                    Enable link
+                                </label>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onClose(educationForm)">Close</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="education_hr opacity-100 mb-5">
+        <div class="education_cards_container mt-2">
+            <ul class="education_cards">
+                <li class="education_card position-relative" *ngFor="let education of data">
+                    <a class="education_link d-flex flex-row" [href]="education?.link">
+                        <div class="education_card_img" id="education_header">
+                            <img [src]="education?.img_url" alt="Imagen del proyecto">
+                        </div>
+                        <div class="education_card_content">
+                            <h3 class="education_card_title animated_bg animated_bg_title fs-5" id="title">
+                                {{education?.where}}
+                            </h3>
+                            <p class="education_card_text" id="text">
+                                {{education?.degree}} | {{education?.start_date}} to {{education?.end_date}}
+                            </p>
+                            
+                        </div>
+                    </a>
+                    <div class="education_buttons position-absolute top-50 end-0 translate-middle-y me-4">
+                        <i class="fa-solid fa-pen-to-square edit_button edit_button_ico me-3" (click)="editModal(education)" data-bs-toggle="modal" data-bs-target="#editEducationModal" *ngIf="isLogged"></i>
+                        <i class="fa-solid fa-trash delete_button" (click)="onDelete(education)" *ngIf="isLogged"></i>
+                    </div>
+                </li>
+            </ul>
+            <app-education-modal [education] = "educationToEdit" (onUpdateEducation)="updateEducation($event)"></app-education-modal>
+        </div>
+    </div>
+</section>

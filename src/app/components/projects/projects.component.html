@@ -1,0 +1,177 @@
+<section class="projects vh-100" id="projects">
+    <div class="projects_container d-flex flex-column justify-content-center align-items-center h-100">
+        <div class="project_header d-flex flex-row justify-content-center">
+            <h1 class="project_title">Projects</h1>
+            <div class="ico_container">
+                <i class="fa-solid fa-pen-to-square edit_button edit_button_ico position-absolute mt-2 ms-3" data-bs-toggle="modal" data-bs-target="#addProjectModal" *ngIf="isLogged"></i>
+            </div>
+            <div class="modal fade" id="addProjectModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="" #projectForm="ngForm" (ngSubmit)="projectForm.form.valid && onAddProject(projectForm)">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-dark" id="projectModalLabel">Add new project</h5>
+                                <button type="button" #clsProject class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="text-dark mb-2">Project</h5>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="inputProjectTitle" placeholder="Project title" name="newProjectTitle" 
+                                        [(ngModel)]="projectToAdd.name" #pName="ngModel"
+                                        [ngClass]="{ 'is-invalid': projectForm.submitted && pName.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="projectForm.submitted && pName.invalid">
+                                        <p *ngIf="pName.errors" class="text-danger">Title is required</p>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea class="form-control" placeholder="Project description" id="newProjectDescription" name="newProjectDescription" 
+                                        [(ngModel)]="projectToAdd.description" #pDescription="ngModel"
+                                        [ngClass]="{ 'is-invalid': projectForm.submitted && pDescription.invalid }"
+                                        required
+                                    ></textarea>
+                                    <div class="invalid-feedback" *ngIf="projectForm.submitted && pDescription.invalid">
+                                        <p *ngIf="pDescription.errors" class="text-danger">Description is required</p>
+                                    </div>
+                                </div>
+                                <h5 class="text-dark mb-2">Links</h5>
+                                <div class="form-text">Project image</div>
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" accept="image/jpeg" id="inputProjectImgUrl" 
+                                        (change)="getImg($event)" #projectInput
+                                        [ngClass]="{ 'is-invalid': projectForm.submitted && !file }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="projectForm.submitted && !file">
+                                        <p *ngIf="!file" class="text-danger">Image is required</p>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mb-1" id="inputProjectLink" placeholder="Link" name="newProjectLink" [(ngModel)]="projectToAdd.link">
+                                <input type="checkbox" class="form-check-input" id="checkEnabledLink" name="newProjectEnabled" [(ngModel)]="projectToAdd.enabled_link">
+                                <label class="form-check-label text-dark ms-1 mb-1" for="checkEnabledLink">
+                                    Enable link
+                                </label>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetProject()">Close</button>
+                                <button type="button" class="btn btn-primary" data-bs-target="#projectsModal" data-bs-toggle="modal" (click)="resetProject()">Projects list</button>
+                                <button type="submit" class="btn btn-primary">Add project</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="projectsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-dark" id="projectsModalLabel">Projects list</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-dark">Projects</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let project of data">
+                                        <td class="text-dark">{{project?.name}}</td>
+                                        <td>
+                                            <div class="d-flex float-end">
+                                                <button type="button" class="btn btn-primary btn-sm me-2" (click)="onEdit(project)" data-bs-target="#editProjectModal" data-bs-toggle="modal">Edit project</button>
+                                                <button type="button" class="btn btn-danger btn-sm" (click)="onDelete(project)">Delete project</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" data-bs-target="#addProjectModal" data-bs-toggle="modal">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
+            <div class="modal fade" id="editProjectModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="" #projectEditForm="ngForm" (ngSubmit)="projectEditForm.form.valid && updateProject(projectEditForm)">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-dark" id="editProjectModalLabel">Add new project</h5>
+                                <button type="button" #clsEditProject class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="text-dark mb-2">Project</h5>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="editProjectTitle" placeholder="Project title" name="projectTitle" 
+                                        [(ngModel)]="projectToEdit.name" #epName="ngModel"
+                                        [ngClass]="{ 'is-invalid': projectEditForm.submitted && epName.invalid }"
+                                        required
+                                    >
+                                    <div class="invalid-feedback" *ngIf="projectEditForm.submitted && epName.invalid">
+                                        <p *ngIf="epName.errors" class="text-danger">Title is required</p>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea class="form-control" placeholder="Project description" id="editDescription" name="projectDescription" 
+                                        [(ngModel)]="projectToEdit.description" #epDescription="ngModel"
+                                        [ngClass]="{ 'is-invalid': projectEditForm.submitted && epDescription.invalid }"
+                                    ></textarea>
+                                    <div class="invalid-feedback" *ngIf="projectEditForm.submitted && epDescription.invalid">
+                                        <p *ngIf="epDescription.errors" class="text-danger">Description is required</p>
+                                    </div>
+                                </div>
+                                <h5 class="text-dark mb-2">Links</h5>
+                                <div class="form-text">Project image</div>
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" accept="image/jpeg" id="editProjectImgUrl" 
+                                        (change)="getEditImg($event)" #projectInput
+                                    >
+                                </div>
+                                <input type="text" class="form-control mb-1" id="editProjectLink" placeholder="Link" name="projectLink" [(ngModel)]="projectToEdit.link">
+                                <input type="checkbox" class="form-check-input" id="editEnabledLink" name="projectEnabledLink" [(ngModel)]="projectToEdit.enabled_link">
+                                <label class="form-check-label text-dark ms-1 mb-1" for="editEnabledLink">
+                                    Enable link
+                                </label>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-target="#projectsModal" data-bs-toggle="modal">Back</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="project_hr opacity-100 w-25 mt-1">
+        <div class="project_cards_container">
+            <swiper class="project_cards my-swiper my_swiper"
+                #swiper 
+                [config]="config"
+                style="--swiper-navigation-color: #dc3545;--swiper-pagination-color: #dc3545"
+            >
+                <ng-template swiperSlide class="swiper_slide swiper-slide" *ngFor="let project of data">
+                    <div class="project_card"><div class="project_link"> 
+                        <div class="project_card_header animated_bg project_card_img" id="project_header">
+                            <img [src]="project.img_url" alt="Imagen del proyecto {{project.name}}">
+                        </div>
+                        <div class="project_card_content">
+                            <h3 class="project_card_title fs-5 m-0" id="title">
+                               {{project.name}}
+                            </h3>
+                            <p class="project_card_text lh-sm mt-3 mb-6" id="text">
+                                {{project.description}}
+                            </p>
+                            <div class="project_button_container" *ngIf="project.enabled_link"><a [href]="project.link" class="button d-block p-3">WEB / GITHUB</a></div>
+                        </div>
+                    </div></div>
+                </ng-template>
+            </swiper>
+        </div>
+    </div>
+</section>

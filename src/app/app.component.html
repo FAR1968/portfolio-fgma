@@ -1,0 +1,11 @@
+<body>
+  <app-navbar></app-navbar>
+  <app-header (onLog)="login($event)" [data]="dataPerson" [image]="dataImages"></app-header>
+  <app-about [isLogged]="isLogged" (onUpdate)="updateData($event)" ></app-about>
+  <app-experience [isLogged]="isLogged"></app-experience>
+  <app-education [isLogged]="isLogged"></app-education>
+  <app-skills [isLogged]="isLogged"></app-skills>
+  <app-projects [isLogged]="isLogged"></app-projects>
+  <app-contact [data]="dataPerson"></app-contact>
+  <app-footer [data]="dataLinks"></app-footer>
+</body>
