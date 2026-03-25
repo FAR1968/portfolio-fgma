@@ -1,12 +1,12 @@
 .home_presentation_name{
     font-weight: 800;
-    font-size: 60px;
+    font-size: 120px;
     color: white;
 }
 
 .home_presentation_text{
     font-weight: 600;
-    font-size: 19px;
+    font-size: 30px;
     color: #b3bab9;
     margin-bottom: 30px;
     margin-top: 10px;
@@ -29,7 +29,6 @@
 .profile_img{
     border-radius: 50%;
     width: 380px;
-    border-style: none;
     border: 6px solid white;
     background-color: white;
 }
